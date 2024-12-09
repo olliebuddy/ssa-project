@@ -11,4 +11,24 @@
     <a href="{% url 'users:top_up' %}">Top Up Balance</a>
     {% comment %} <a href="{% url 'users:top_up' user.id %}">Make a Payment</a> {% endcomment %}
     {% comment %} <input type="number" step="0.01" min="0.01"> {% endcomment %}
+    <h3>Transcrations</h3>
+    {% if transactions %}
+    <div style='display:inline-block'> 
+        <table> 
+                <tr>
+                    <th>Amount </th>
+                    <th>Date</th>
+                </tr>
+            {% for transaction in transactions %}
+                <tr>
+                    <td>+${{ transaction.amount }}</td>
+                    <td>{{ transaction.created_at }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% else %}
+        <p>No transactions to display.</p>
+    {% endif %}
+
 {% endblock %}
