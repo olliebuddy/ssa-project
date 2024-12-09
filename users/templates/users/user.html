@@ -5,5 +5,10 @@
 {% block content %} 
     <h2>Welcome {{ request.user.first_name }}</h2>
     <p>This page is for user management functions.</p>
+    <h4>Current Balance: ${{ balance }}</h4>
     <a href="{% url 'chipin:home' %}">Click through to ChipIn Functions</a>
+    <br>
+    <a href="{% url 'users:top_up' %}">Top Up Balance</a>
+    {% comment %} <a href="{% url 'users:top_up' user.id %}">Make a Payment</a> {% endcomment %}
+    {% comment %} <input type="number" step="0.01" min="0.01"> {% endcomment %}
 {% endblock %}

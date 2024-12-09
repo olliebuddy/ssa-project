@@ -4,7 +4,8 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import UserRegistrationForm
+from .forms import UserRegistrationForm,TopUpForm
+from .models import Transaction
 import requests
 from django.conf import settings
 
@@ -50,9 +51,17 @@ def register(request):
         form = UserRegistrationForm()
     return render(request, 'users/register.html', {'form': form})
 
+def user_view(request):
+    profile = request.user.profile  # Get the logged-in user's profile
+    return render(request, 'users/user.html', {'balance': profile.balance})
+
 @login_required(login_url='users:login')
 def user(request):
-    return render(request, "users/user.html")
+    profile = request.user.profile
+    return render(request, 'users/user.html', {
+        'user': request.user,
+        'balance': profile.balance
+    })
 
 def login_view(request):
     if request.method == "POST":
@@ -71,3 +80,25 @@ def logout_view(request):
     logout(request)
     messages.success(request, "Successfully logged out.")
     return redirect('users:login')
+
+@login_required
+def top_up(request):
+    profile = request.user.profile 
+
+    if request.method == 'POST':
+        form = TopUpForm(request.POST)
+        if form.is_valid():
+            amount = form.cleaned_data['amount']
+            profile.balance +=amount #add valid transaction money to account
+            profile.save()
+            Transaction.objects.create(user=request.user, amount=amount) # transaction record
+            messages.success(request, f"Your balance has been topped up by ${amount}.")
+            return redirect('users:user') # redirect to user page
+    else:
+        form = TopUpForm()
+    context = {
+        'form': form,
+        'user_balance': request.user.profile.balance,
+        'welcome_message': f"Welcome back, {request.user.first_name}!",
+    }
+    return render(request, 'users/top_up.html', context)

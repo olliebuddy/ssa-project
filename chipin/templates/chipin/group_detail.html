@@ -63,12 +63,12 @@
             {% endif %}
         {% endfor %}
     </ul>
-<h2>Group Events</h2>
-<!-- Only display "Create New Event" link to the group administrator -->
-{% if request.user == group.admin %}
-    <a href="{% url 'chipin:create_event' group.id %}" class="btn btn-primary">Create New Event</a>
-{% endif %}
-<ul>
+    <h2>Group Events</h2>
+    <!-- Only display "Create New Event" link to the group administrator -->
+    {% if request.user == group.admin %}
+        <a href="{% url 'chipin:create_event' group.id %}" class="btn btn-primary">Create New Event</a>
+    {% endif %}
+    <ul>
     {% for event, info in event_share_info.items %}
         <li>
             <strong>{{ event.name }}</strong> - Date: {{ event.date }},
@@ -94,5 +94,5 @@
             {% endif %}
         </li>
     {% endfor %}
-</ul>
+    </ul>
 {% endblock content %}

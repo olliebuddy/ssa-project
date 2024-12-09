@@ -268,36 +268,6 @@ def create_group(request):
     return render(request, 'chipin/create_group.html', {'form': form})
 
 @login_required
-def group_detail(request, group_id, edit_comment_id=None):
-    group = get_object_or_404(Group, id=group_id)
-    comments = group.comments.all().order_by('-created_at')  # Fetch all comments for the group
-    if edit_comment_id: # Fetch the comment to edit, if edit_comment_id is provided
-        comment_to_edit = get_object_or_404(Comment, id=edit_comment_id)
-        if comment_to_edit.user != request.user:
-            return redirect('chipin:group_detail', group_id=group.id)
-    else:
-        comment_to_edit = None
-    if request.method == 'POST':
-        if comment_to_edit: # Editing an existing comment
-            form = CommentForm(request.POST, instance=comment_to_edit)
-        else: # Adding a new comment
-            form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.user = request.user
-            comment.group = group
-            comment.save()
-            return redirect('chipin:group_detail', group_id=group.id)
-    else:
-        form = CommentForm(instance=comment_to_edit) if comment_to_edit else CommentForm()
-    return render(request, 'chipin/group_detail.html', {
-        'group': group,
-        'comments': comments,
-        'form': form,
-        'comment_to_edit': comment_to_edit,
-    })
-
-@login_required
 def delete_group(request, group_id):
     group = get_object_or_404(Group, id=group_id)
     if request.user == group.admin:
